@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Sign in{% endblock %}
+{% block auth_content %}
+<div class="auth-wrap"><div class="auth-card"><a class="brand justify-content-center mb-4" href="#"><span class="brand-icon"><i class="bi bi-wallet2"></i></span>FinTrack</a><h2>Welcome back</h2><p class="muted mb-4">Sign in to your personal finance workspace.</p>
+<form method="post">{% csrf_token %}
+  {% if form.errors %}<div class="alert alert-danger">Username or password is incorrect.</div>{% endif %}
+  <label class="form-label">Username</label>{{ form.username }}
+  <label class="form-label mt-3">Password</label>{{ form.password }}
+  <button class="btn btn-primary w-100 mt-4">Sign in</button>
+</form><p class="text-center mt-4 mb-0 muted">New here? <a href="{% url 'register' %}">Create an account</a></p></div></div>
+{% endblock %}

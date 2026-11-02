@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block title %}Reports{% endblock %}{% block page_heading %}Reports & insights{% endblock %}
+{% block content %}<div class="welcome-row"><div><h2>Financial reports</h2><p class="muted">Compare your income and expenses across the year.</p></div><form method="get" class="d-flex gap-2"><input class="form-control" type="number" name="year" value="{{ year }}" min="2000" max="2100" style="width:110px"><button class="btn btn-dark">View</button></form></div>
+<section class="panel"><div class="panel-head"><div><h5>Yearly cash flow · {{ year }}</h5><p class="muted">Monthly income versus expenses</p></div></div><div class="chart-box report-chart"><canvas id="yearChart"></canvas></div></section>{% endblock %}
+{% block scripts %}<script>window.reportData={labels:{{ monthly_labels|safe }},income:{{ monthly_income|safe }},expense:{{ monthly_expense|safe }}};</script>{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}{% block page_heading %}Dashboard{% endblock %}
+{% block content %}
+<div class="welcome-row"><div><h2>Good to see you, {{ user.username }} <span>✦</span></h2><p class="muted">Here is your financial snapshot for {{ today|date:"F Y" }}.</p></div><a class="btn btn-primary" href="{% url 'transaction_create' %}"><i class="bi bi-plus-lg"></i> Add transaction</a></div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-top"><span>Total balance</span><span class="stat-icon purple"><i class="bi bi-wallet2"></i></span></div><div class="stat-value">₹{{ balance|floatformat:2 }}</div><small class="muted">All-time net balance</small></div>
+  <div class="stat-card"><div class="stat-top"><span>Monthly income</span><span class="stat-icon green"><i class="bi bi-arrow-down-left"></i></span></div><div class="stat-value">₹{{ income|floatformat:2 }}</div><small class="positive">Income this month</small></div>
+  <div class="stat-card"><div class="stat-top"><span>Monthly expenses</span><span class="stat-icon orange"><i class="bi bi-arrow-up-right"></i></span></div><div class="stat-value">₹{{ expense|floatformat:2 }}</div><small class="muted">Expenses this month</small></div>
+  <div class="stat-card"><div class="stat-top"><span>Monthly savings</span><span class="stat-icon blue"><i class="bi bi-piggy-bank"></i></span></div><div class="stat-value">₹{{ savings|floatformat:2 }}</div><small class="muted">Income minus expenses this month</small></div>
+</div>
+<div class="charts-grid">
+  <section class="panel"><div class="panel-head"><div><h5>Cash flow</h5><p class="muted">Daily income and expenses this month</p></div><span class="pill">This month</span></div><div class="chart-box"><canvas id="cashFlowChart"></canvas></div></section>
+  <section class="panel"><div class="panel-head"><div><h5>Spending by category</h5><p class="muted">Where your money goes</p></div></div><div class="chart-box doughnut-box"><canvas id="categoryChart"></canvas></div></section>
+</div>
+<section class="panel mt-4"><div class="panel-head"><div><h5>Budget progress</h5><p class="muted">Your monthly spending limits</p></div><a href="{% url 'budgets' %}">Manage budgets <i class="bi bi-arrow-right"></i></a></div>
+{% for item in budget_cards %}<div class="budget-line"><div class="d-flex justify-content-between"><strong>{{ item.budget.category.name }}</strong><span>₹{{ item.spent|floatformat:2 }} / ₹{{ item.budget.limit_amount|floatformat:2 }}</span></div><div class="progress mt-2"><div class="progress-bar {% if item.over %}bg-danger{% endif %}" style="width:{{ item.percent }}%"></div></div></div>{% empty %}<p class="muted mb-0">No budgets yet. <a href="{% url 'budgets' %}">Create your first budget</a>.</p>{% endfor %}</section>
+<section class="panel mt-4"><div class="panel-head"><div><h5>Recent transactions</h5><p class="muted">Your latest activity</p></div><a href="{% url 'transactions' %}">View all <i class="bi bi-arrow-right"></i></a></div>
+<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Description</th><th>Category</th><th>Date</th><th>Type</th><th class="text-end">Amount</th></tr></thead><tbody>
+{% for t in transactions %}<tr><td><strong>{{ t.description }}</strong></td><td>{{ t.category.name }}</td><td>{{ t.transaction_date|date:"d M Y" }}</td><td><span class="type-chip {{ t.kind }}">{{ t.get_kind_display }}</span></td><td class="text-end fw-semibold {% if t.kind == 'income' %}positive{% else %}negative{% endif %}">{% if t.kind == 'income' %}+{% else %}-{% endif %}₹{{ t.amount|floatformat:2 }}</td></tr>{% empty %}<tr><td colspan="5" class="text-center muted py-4">No transactions yet. Add your first transaction.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
+{% block scripts %}<script>
+window.replace allData = {labels:{{ daily_labels|safe }}, income:{{ daily_income|safe }}, expense:{{ daily_expense|safe }}, categoryLabels:{{ category_labels|safe }}, categoryValues:{{ category_values|safe }}};
+</script>{% endblock %}
